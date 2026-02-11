@@ -1,49 +1,48 @@
 <?xml version="1.0" encoding="utf-8"?>
-<layer-list xmlns:android="http://schemas.android.com/apk/res/android">
-
-    <!-- 1. 基础底色：温柔的淡紫色 -->
+<layer-list xmlns:android="http://schemas.android.com/apk/res/android">    <!-- 1. 基础底色：深海最暗的部分 -->
     <item>
         <shape android:shape="rectangle">
-            <solid android:color="#FFE4E7FF" />
+            <solid android:color="#FF040B1A" />
             <corners android:radius="24dp" />
         </shape>
     </item>
 
-    <!-- 2. 左上角的湖蓝色晕染 -->
+    <!-- 2. 右上角的靛蓝色光晕 -->
+    <item>
+        <shape android:shape="rectangle">
+            <gradient
+                android:type="radial"
+                android:gradientRadius="200dp"
+                android:startColor="#66004E92"
+                android:endColor="#00000000"
+                android:centerX="90%"
+                android:centerY="10%" />
+            <corners android:radius="24dp" />
+        </shape>
+    </item>
+
+    <!-- 3. 左下角的深紫色光晕 -->
     <item>
         <shape android:shape="rectangle">
             <gradient
                 android:type="radial"
                 android:gradientRadius="250dp"
-                android:startColor="#66BEE3FF"
+                android:startColor="#4D4A00E0"
                 android:endColor="#00000000"
                 android:centerX="10%"
-                android:centerY="20%" />
+                android:centerY="90%" />
             <corners android:radius="24dp" />
         </shape>
     </item>
 
-    <!-- 3. 右下角的暖粉色晕染 -->
-    <item>
-        <shape android:shape="rectangle">
-            <gradient
-                android:type="radial"
-                android:gradientRadius="300dp"
-                android:startColor="#66FFD1DC"
-                android:endColor="#00000000"
-                android:centerX="90%"
-                android:centerY="80%" />
-            <corners android:radius="24dp" />
-        </shape>
-    </item>
-
-    <!-- 4. 细腻的白色珠光描边 -->
+    <!-- 4. 玻璃质感的极细边框，增加物理体积感 -->
     <item>
         <shape android:shape="rectangle">
             <stroke
-                android:width="1.5dp"
-                android:color="#80FFFFFF" />
+                android:width="1dp"
+                android:color="#33FFFFFF" />
             <corners android:radius="24dp" />
         </shape>
     </item>
+
 </layer-list>

@@ -148,7 +148,7 @@ public class HitokotoWidget extends AppWidgetProvider {
         for (int appWidgetId : appWidgetIds) {
             RemoteViews views = new RemoteViews(context.getPackageName(), R.layout.widget_layout);
             views.setTextViewText(R.id.tv_hitokoto, hitokoto);
-            views.setTextViewText(R.id.tv_author, "-- " + from + " --");
+            views.setTextViewText(R.id.tv_author, from);
 
             // 重新设置点击事件
             Intent intent = new Intent(context, HitokotoWidget.class);

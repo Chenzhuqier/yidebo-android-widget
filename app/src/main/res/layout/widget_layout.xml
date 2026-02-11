@@ -5,44 +5,59 @@
     android:background="@drawable/widget_background"
     android:padding="20dp">
 
-    <!-- 装饰图标 -->
-    <TextView
-        android:id="@+id/icon_quote"
+    <!-- 顶部：日期和星期组合 (组合在同一个 TextClock 中，更简洁) -->
+    <TextClock
+        android:id="@+id/tc_date_weekday"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="📖"
-        android:textSize="24sp"
         android:layout_alignParentTop="true"
-        android:layout_alignParentStart="true" />
+        android:layout_alignParentStart="true"
+        android:format12Hour="MM月dd日 EEEE"
+        android:format24Hour="MM月dd日 EEEE"
+        android:textColor="#804A4A4A"
+        android:textSize="13sp"
+        android:textStyle="bold" />
 
-    <!-- 一句话内容 -->
+    <!-- 背景装饰：左引号 -->
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="“"
+        android:textSize="90sp"
+        android:textColor="#0D000000"
+        android:layout_alignTop="@id/tv_hitokoto"
+        android:layout_alignParentStart="true"
+        android:layout_marginTop="-45dp"
+        android:layout_marginStart="5dp" />
+
+    <!-- 中间：一句话内容 -->
     <TextView
         android:id="@+id/tv_hitokoto"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_below="@id/icon_quote"
-        android:layout_marginTop="12dp"
-        android:layout_marginBottom="12dp"
+        android:layout_centerInParent="true"
         android:text="加载中..."
         android:textSize="18sp"
-        android:textColor="#FFFFFF"
-        android:textStyle="normal"
-        android:lineSpacingExtra="4dp"
-        android:gravity="start"
+        android:textColor="#4A4A4A"
+        android:lineSpacingExtra="6dp"
+        android:gravity="center_vertical"
         android:maxLines="3"
         android:ellipsize="end"
-        android:fontFamily="sans-serif-medium" />
+        android:fontFamily="serif" />
 
-    <!-- 作者 -->
+
+    <!-- 底部右侧：作者 -->
     <TextView
         android:id="@+id/tv_author"
-        android:layout_width="match_parent"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignParentBottom="true"
+        android:layout_alignParentEnd="true"
+        android:layout_marginBottom="4dp"
         android:text="—— 未知"
-        android:textSize="14sp"
-        android:textColor="#E0FFFFFF"
-        android:gravity="end"
-        android:fontFamily="serif" />
+        android:textSize="12sp"
+        android:textColor="#804A4A4A"
+        android:fontFamily="serif"
+        android:textStyle="italic" />
 
 </RelativeLayout>
