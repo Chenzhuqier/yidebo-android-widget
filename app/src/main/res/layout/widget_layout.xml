@@ -1,35 +1,48 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!-- res/layout/widget_layout.xml -->
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="vertical"
-    android:padding="16dp"
     android:background="@drawable/widget_background"
-    android:gravity="center">
+    android:padding="20dp">
+
+    <!-- 装饰图标 -->
+    <TextView
+        android:id="@+id/icon_quote"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="📖"
+        android:textSize="24sp"
+        android:layout_alignParentTop="true"
+        android:layout_alignParentStart="true" />
 
     <!-- 一句话内容 -->
     <TextView
         android:id="@+id/tv_hitokoto"
         android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:layout_weight="1"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/icon_quote"
+        android:layout_marginTop="12dp"
+        android:layout_marginBottom="12dp"
         android:text="加载中..."
-        android:textSize="16sp"
-        android:textColor="#333333"
-        android:gravity="center"
+        android:textSize="18sp"
+        android:textColor="#FFFFFF"
+        android:textStyle="normal"
+        android:lineSpacingExtra="4dp"
+        android:gravity="start"
         android:maxLines="3"
-        android:ellipsize="end" />
+        android:ellipsize="end"
+        android:fontFamily="sans-serif-medium" />
 
     <!-- 作者 -->
     <TextView
         android:id="@+id/tv_author"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="-- 未知 --"
-        android:textSize="12sp"
-        android:textColor="#666666"
+        android:layout_alignParentBottom="true"
+        android:text="—— 未知"
+        android:textSize="14sp"
+        android:textColor="#E0FFFFFF"
         android:gravity="end"
-        android:layout_marginTop="8dp" />
+        android:fontFamily="serif" />
 
-</LinearLayout>
+</RelativeLayout>
