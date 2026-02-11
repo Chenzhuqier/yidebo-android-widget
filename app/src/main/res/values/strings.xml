@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- res/values/strings.xml -->
+<resources>
+    <string name="app_name">一嘚啵</string>
+    <string name="widget_description">每小时更新一句话名言</string>
+</resources>
