@@ -10,12 +10,17 @@ import android.content.Intent;
 import android.os.SystemClock;
 import android.widget.RemoteViews;
 
+import androidx.work.ExistingPeriodicWorkPolicy;
+import androidx.work.PeriodicWorkRequest;
+import androidx.work.WorkManager;
+
 import org.json.JSONObject;
 
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.util.concurrent.TimeUnit;
 
 public class HitokotoWidget extends AppWidgetProvider {
 
@@ -24,23 +29,23 @@ public class HitokotoWidget extends AppWidgetProvider {
     private static final String API_URL = "https://api.codelife.cc/yiyan/random?lang=cn";
 
     @Override
-    public void onUpdate(Context context, AppWidgetManager appWidgetManager, int[] appWidgetIds) {
-        for (int appWidgetId : appWidgetIds) {
-            updateAppWidget(context, appWidgetManager, appWidgetId);
-        }
-        setupAlarm(context);
-    }
-
-    @Override
     public void onEnabled(Context context) {
         super.onEnabled(context);
-        setupAlarm(context);
+        setupWorkManager(context);  // 改用WorkManager
     }
 
     @Override
     public void onDisabled(Context context) {
         super.onDisabled(context);
-        cancelAlarm(context);
+        cancelWorkManager(context);  // 改用WorkManager
+    }
+
+    @Override
+    public void onUpdate(Context context, AppWidgetManager appWidgetManager, int[] appWidgetIds) {
+        for (int appWidgetId : appWidgetIds) {
+            updateAppWidget(context, appWidgetManager, appWidgetId);
+        }
+        setupWorkManager(context);  // 改用WorkManager
     }
 
     @Override
@@ -161,27 +166,19 @@ public class HitokotoWidget extends AppWidgetProvider {
         }
     }
 
-    private void setupAlarm(Context context) {
-        AlarmManager alarmManager = (AlarmManager) context.getSystemService(Context.ALARM_SERVICE);
-        Intent intent = new Intent(context, HitokotoWidget.class);
-        intent.setAction(ACTION_UPDATE);
+    private void setupWorkManager(Context context) {
+        PeriodicWorkRequest updateRequest =
+                new PeriodicWorkRequest.Builder(UpdateWorker.class, 1, TimeUnit.HOURS)
+                        .build();
 
-        PendingIntent pendingIntent = PendingIntent.getBroadcast(context, 0, intent,
-                PendingIntent.FLAG_UPDATE_CURRENT | PendingIntent.FLAG_IMMUTABLE);
-
-        long firstTime = SystemClock.elapsedRealtime() + UPDATE_INTERVAL;
-        alarmManager.setRepeating(AlarmManager.ELAPSED_REALTIME, firstTime,
-                UPDATE_INTERVAL, pendingIntent);
+        WorkManager.getInstance(context).enqueueUniquePeriodicWork(
+                "hitokoto_update",
+                ExistingPeriodicWorkPolicy.KEEP,
+                updateRequest
+        );
     }
 
-    private void cancelAlarm(Context context) {
-        AlarmManager alarmManager = (AlarmManager) context.getSystemService(Context.ALARM_SERVICE);
-        Intent intent = new Intent(context, HitokotoWidget.class);
-        intent.setAction(ACTION_UPDATE);
-
-        PendingIntent pendingIntent = PendingIntent.getBroadcast(context, 0, intent,
-                PendingIntent.FLAG_UPDATE_CURRENT | PendingIntent.FLAG_IMMUTABLE);
-
-        alarmManager.cancel(pendingIntent);
+    private void cancelWorkManager(Context context) {
+        WorkManager.getInstance(context).cancelAllWork();
     }
 }
