@@ -10,34 +10,31 @@ import android.content.Intent;
 import android.os.SystemClock;
 import android.widget.RemoteViews;
 
-import androidx.work.ExistingPeriodicWorkPolicy;
-import androidx.work.PeriodicWorkRequest;
-import androidx.work.WorkManager;
-
 import org.json.JSONObject;
 
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
-import java.util.concurrent.TimeUnit;
 
 public class HitokotoWidget extends AppWidgetProvider {
 
     private static final String ACTION_UPDATE = "com.example.hitokotowidget.UPDATE";
+    private static final String ACTION_ALARM = "com.example.hitokotowidget.ALARM";
     private static final long UPDATE_INTERVAL = 60 * 60 * 1000; // 1小时
+    private static final int ALARM_REQUEST_CODE = 1001;
     private static final String API_URL = "https://api.codelife.cc/yiyan/random?lang=cn";
 
     @Override
     public void onEnabled(Context context) {
         super.onEnabled(context);
-        setupWorkManager(context);  // 改用WorkManager
+        setupAlarmManager(context);
     }
 
     @Override
     public void onDisabled(Context context) {
         super.onDisabled(context);
-        cancelWorkManager(context);  // 改用WorkManager
+        cancelAlarmManager(context);
     }
 
     @Override
@@ -45,7 +42,6 @@ public class HitokotoWidget extends AppWidgetProvider {
         for (int appWidgetId : appWidgetIds) {
             updateAppWidget(context, appWidgetManager, appWidgetId);
         }
-        setupWorkManager(context);  // 改用WorkManager
     }
 
     @Override
@@ -57,6 +53,13 @@ public class HitokotoWidget extends AppWidgetProvider {
             ComponentName thisWidget = new ComponentName(context, HitokotoWidget.class);
             int[] appWidgetIds = appWidgetManager.getAppWidgetIds(thisWidget);
             onUpdate(context, appWidgetManager, appWidgetIds);
+        } else if (ACTION_ALARM.equals(intent.getAction())) {
+            // 闹钟触发，更新widget并重新设置下次闹钟
+            AppWidgetManager appWidgetManager = AppWidgetManager.getInstance(context);
+            ComponentName thisWidget = new ComponentName(context, HitokotoWidget.class);
+            int[] appWidgetIds = appWidgetManager.getAppWidgetIds(thisWidget);
+            onUpdate(context, appWidgetManager, appWidgetIds);
+            setupAlarmManager(context);
         }
     }
 
@@ -166,19 +169,30 @@ public class HitokotoWidget extends AppWidgetProvider {
         }
     }
 
-    private void setupWorkManager(Context context) {
-        PeriodicWorkRequest updateRequest =
-                new PeriodicWorkRequest.Builder(UpdateWorker.class, 1, TimeUnit.HOURS)
-                        .build();
+    public static void setupAlarmManager(Context context) {
+        AlarmManager alarmManager = (AlarmManager) context.getSystemService(Context.ALARM_SERVICE);
+        if (alarmManager == null) return;
 
-        WorkManager.getInstance(context).enqueueUniquePeriodicWork(
-                "hitokoto_update",
-                ExistingPeriodicWorkPolicy.KEEP,
-                updateRequest
-        );
+        Intent intent = new Intent(context, HitokotoWidget.class);
+        intent.setAction(ACTION_ALARM);
+        PendingIntent pendingIntent = PendingIntent.getBroadcast(context, ALARM_REQUEST_CODE, intent,
+                PendingIntent.FLAG_UPDATE_CURRENT | PendingIntent.FLAG_IMMUTABLE);
+
+        // 使用 setRepeating 并配合 RTC_WAKEUP
+        // RTC_WAKEUP 会在指定时间触发，即使设备在Doze Mode也会唤醒
+        long triggerTime = SystemClock.elapsedRealtime() + UPDATE_INTERVAL;
+        alarmManager.setRepeating(AlarmManager.ELAPSED_REALTIME_WAKEUP, triggerTime, UPDATE_INTERVAL, pendingIntent);
     }
 
-    private void cancelWorkManager(Context context) {
-        WorkManager.getInstance(context).cancelAllWork();
+    private void cancelAlarmManager(Context context) {
+        AlarmManager alarmManager = (AlarmManager) context.getSystemService(Context.ALARM_SERVICE);
+        if (alarmManager == null) return;
+
+        Intent intent = new Intent(context, HitokotoWidget.class);
+        intent.setAction(ACTION_ALARM);
+        PendingIntent pendingIntent = PendingIntent.getBroadcast(context, ALARM_REQUEST_CODE, intent,
+                PendingIntent.FLAG_UPDATE_CURRENT | PendingIntent.FLAG_IMMUTABLE);
+
+        alarmManager.cancel(pendingIntent);
     }
 }
